@@ -39,6 +39,7 @@ public class FirstDriver extends Configured implements Tool {
 	  static Log LOG = LogFactory.getLog(FirstDriver.class);
 
 	public static final String TABLE_NAME = "test-table";
+	public static final String SERVER = "192.168.56.101";
 
 	public int run(String[] args) throws Exception {
 		String tableName = TABLE_NAME;
@@ -79,8 +80,8 @@ public class FirstDriver extends Configured implements Tool {
 		
 //		Configuration conf = HBaseConfiguration.create();
 
-		conf.set("hbase.zookeeper.quorum", "192.168.56.101");
-		conf.set("hbase.master", "192.168.56.101:60000");
+		conf.set("hbase.zookeeper.quorum", SERVER);
+		conf.set("hbase.master", SERVER+":60000");
 		conf.set("hbase.zookeeper.property.clientPort","2181");
 		conf.set("zookeeper.znode.parent", "/hbase-unsecure");
 		restTable(conf);
