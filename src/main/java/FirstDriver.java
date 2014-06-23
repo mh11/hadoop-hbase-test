@@ -84,7 +84,7 @@ public class FirstDriver extends Configured implements Tool {
 		conf.set("hbase.master", SERVER+":60000");
 		conf.set("hbase.zookeeper.property.clientPort","2181");
 		conf.set("zookeeper.znode.parent", "/hbase-unsecure");
-		restTable(conf);
+		resetTable(conf);
 		int exitCode = 1;
 		
 		try {
@@ -96,7 +96,7 @@ public class FirstDriver extends Configured implements Tool {
 	}
 
 
-	public static void restTable(Configuration conf) {
+	public static void resetTable(Configuration conf) {
 		try (HConnection hconf = HConnectionManager.createConnection(conf)) {
 			HBaseAdmin admin = new HBaseAdmin(conf);
 			HTableDescriptor table = findTable(admin, TABLE_NAME);
