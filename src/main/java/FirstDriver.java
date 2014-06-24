@@ -18,12 +18,10 @@ import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 import org.apache.hadoop.hbase.mapreduce.HFileOutputFormat2;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
-
-import uk.ac.cam.medschl.mapper.Echo;
+import org.opencb.opencga.storage.variant.hbase.JsonPutMapper;
 
 /**
  * 
@@ -43,11 +41,12 @@ public class FirstDriver extends Configured implements Tool {
 
 	public int run(String[] args) throws Exception {
 		String tableName = TABLE_NAME;
-	    Path inputDir = new Path("variant-test-file.vcf");
+	    Path inputDir = new Path("variant-test-file.vcf.gz.variants.json");
 	    Path outputDir = new Path("out.dir");
-	    Class<? extends Mapper> clazz = Echo.class;
+	    Class<? extends Mapper> clazz = JsonPutMapper.class;
 	    
 	    Job job = Job.getInstance(getConf());
+	    
 	    job.setJobName(this.getClass().getName() + "_" + tableName);	
 	    
 	    HBaseConfiguration.addHbaseResources(getConf());
@@ -106,7 +105,7 @@ public class FirstDriver extends Configured implements Tool {
 			}
 			TableName tn = TableName.valueOf(TABLE_NAME);
 			table = new HTableDescriptor(tn);
-			table.addFamily(new HColumnDescriptor("c"));
+			table.addFamily(new HColumnDescriptor("d"));
 			admin.createTable(table);
 		} catch (IOException e) {
 			e.printStackTrace(System.err);

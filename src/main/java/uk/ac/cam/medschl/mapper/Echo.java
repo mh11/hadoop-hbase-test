@@ -3,6 +3,8 @@
  */
 package uk.ac.cam.medschl.mapper;
 
+import java.io.IOException;
+
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 import org.apache.hadoop.hbase.util.Bytes;
@@ -15,6 +17,14 @@ import org.apache.hadoop.mapreduce.Mapper;
  *
  */
 public class Echo extends Mapper<LongWritable, Text, ImmutableBytesWritable, Put> {
+	
+	@Override
+	protected void setup(org.apache.hadoop.mapreduce.Mapper.Context context)
+			throws IOException, InterruptedException {
+		// TODO Auto-generated method stub
+		super.setup(context);
+	}
+	
 	
 	protected void map(LongWritable key, Text txt, Mapper<LongWritable,Text,ImmutableBytesWritable,Put>.Context context) throws java.io.IOException ,InterruptedException {
 		ImmutableBytesWritable hKey = new ImmutableBytesWritable();
