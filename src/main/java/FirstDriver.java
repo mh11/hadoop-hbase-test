@@ -28,6 +28,14 @@ import org.opencb.opencga.storage.variant.hbase.JsonPutMapper;
  */
 
 /**
+ * 
+ * # scp dirctory over to server
+ * scp -r out.dir root@192.168.56.101:/root/.
+ * # log into server and copy data into hdfs
+ * hadoop fs -copyFromLocal out.dir out-dir
+ * # load into hbase
+ * hbase org.apache.hadoop.hbase.mapreduce.LoadIncrementalHFiles /user/root/out-dir/ test-table
+ * 
  * @author mh719
  * 
  * http://stackoverflow.com/questions/8750764/what-is-the-fastest-way-to-bulk-load-data-into-hbase-programmatically
