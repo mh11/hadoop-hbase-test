@@ -55,9 +55,11 @@ public class FirstDriver extends Configured implements Tool {
 	public static String SERVER = "192.168.56.101";
 
 	public int run(String[] args) throws Exception {
-		String tableName = TABLE_NAME;
-	    Path inputDir = new Path("variant-test-file.vcf.gz.variants.json");
-	    Path outputDir = new Path("out.dir");
+		String tableName = args[1];
+		String fName = args[2];
+		String oName = args[3];
+	    Path inputDir = new Path(fName);
+	    Path outputDir = new Path(oName);
 	    Class<? extends Mapper> clazz = JsonPutMapper.class;
 	    
 	    Job job = Job.getInstance(getConf());
@@ -89,11 +91,13 @@ public class FirstDriver extends Configured implements Tool {
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
-		if(args.length == 2){ // quick fix
-			SERVER=args[0];
-			TABLE_NAME = args[1];
+		if(args.length != 4){ // quick fix
+			System.err.println("Please provide the following parameters: <server> <table-name> <infile> <output>");
+			System.exit(1);	
 		}
-		
+		SERVER=args[0];
+		TABLE_NAME = args[1];
+				
 		Configuration conf = new Configuration();
 		conf.addResource(FirstDriver.class.getClassLoader().getResourceAsStream("hadoop-local.xml"));
 
