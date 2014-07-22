@@ -1,5 +1,12 @@
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 
+import net.sf.samtools.util.IOUtil;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
@@ -44,8 +51,8 @@ import org.opencb.opencga.storage.variant.hbase.JsonPutMapper;
 public class FirstDriver extends Configured implements Tool {
 	  static Log LOG = LogFactory.getLog(FirstDriver.class);
 
-	public static final String TABLE_NAME = "test-table";
-	public static final String SERVER = "192.168.56.101";
+	public static String TABLE_NAME = "test-table";
+	public static String SERVER = "192.168.56.101";
 
 	public int run(String[] args) throws Exception {
 		String tableName = TABLE_NAME;
@@ -82,10 +89,13 @@ public class FirstDriver extends Configured implements Tool {
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
-		Configuration conf = new Configuration();
-		conf.addResource("hadoop-local.xml");
+		if(args.length == 2){ // quick fix
+			SERVER=args[0];
+			TABLE_NAME = args[1];
+		}
 		
-//		Configuration conf = HBaseConfiguration.create();
+		Configuration conf = new Configuration();
+		conf.addResource(FirstDriver.class.getClassLoader().getResourceAsStream("hadoop-local.xml"));
 
 		conf.set("hbase.zookeeper.quorum", SERVER);
 		conf.set("hbase.master", SERVER+":60000");
