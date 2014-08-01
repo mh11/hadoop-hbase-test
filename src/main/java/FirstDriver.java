@@ -105,6 +105,7 @@ public class FirstDriver extends Configured implements Tool {
 		conf.set("hbase.master", SERVER+":60000");
 		conf.set("hbase.zookeeper.property.clientPort","2181");
 		conf.set("zookeeper.znode.parent", "/hbase-unsecure");
+		conf.setBoolean("includeSamples", true);
 		resetTable(conf);
 		int exitCode = 1;
 		
