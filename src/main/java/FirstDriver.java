@@ -106,7 +106,7 @@ public class FirstDriver extends Configured implements Tool {
 		conf.set("hbase.zookeeper.property.clientPort","2181");
 		conf.set("zookeeper.znode.parent", "/hbase-unsecure");
 		conf.setBoolean("includeSamples", true);
-		resetTable(conf);
+		resetTable(conf,false);
 		int exitCode = 1;
 		
 		try {
@@ -118,13 +118,19 @@ public class FirstDriver extends Configured implements Tool {
 	}
 
 
-	public static void resetTable(Configuration conf) {
+	public static void resetTable(Configuration conf,boolean delete) {
 		try (HConnection hconf = HConnectionManager.createConnection(conf)) {
 			HBaseAdmin admin = new HBaseAdmin(conf);
 			HTableDescriptor table = findTable(admin, TABLE_NAME);
-			if(null != table){
-				admin.disableTable(TABLE_NAME);
-				admin.deleteTable(TABLE_NAME);
+			boolean exist = null != table;
+			
+			if(exist){
+				if(delete){
+					admin.disableTable(TABLE_NAME);
+					admin.deleteTable(TABLE_NAME);
+				} else {
+					return; // return if table exists - no need to continue
+				}
 			}
 			TableName tn = TableName.valueOf(TABLE_NAME);
 			table = new HTableDescriptor(tn);
@@ -132,7 +138,7 @@ public class FirstDriver extends Configured implements Tool {
 			admin.createTable(table);
 		} catch (IOException e) {
 			e.printStackTrace(System.err);
-			System.exit(1);
+			System.exit(1); // TODO quick fix - not nice
 		}
 	}
 	
