@@ -23,6 +23,7 @@ import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 import org.apache.hadoop.hbase.mapreduce.HFileOutputFormat2;
+import org.apache.hadoop.hbase.mapreduce.TableMapReduceUtil;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
@@ -57,13 +58,14 @@ public class FirstDriver extends Configured implements Tool {
 	public int run(String[] args) throws Exception {
 		String tableName = args[1];
 		String fName = args[2];
-		String oName = args[3];
+		String oName = null;
+		if(args.length >3){
+			oName = args[3];
+		}
 	    Path inputDir = new Path(fName);
-	    Path outputDir = new Path(oName);
 	    Class<? extends Mapper> clazz = JsonPutMapper.class;
 	    
 	    Job job = Job.getInstance(getConf());
-	    
 	    job.setJobName(this.getClass().getName() + "_" + tableName);	
 	    
 	    HBaseConfiguration.addHbaseResources(getConf());
@@ -73,15 +75,17 @@ public class FirstDriver extends Configured implements Tool {
 	    job.setInputFormatClass(TextInputFormat.class);
 	    
 	    job.setMapperClass(clazz);
-
-	    job.setOutputFormatClass(HFileOutputFormat2.class);
-	    job.setMapOutputKeyClass(ImmutableBytesWritable.class);
-	    job.setMapOutputValueClass(Put.class);
-	    HFileOutputFormat2.setOutputPath(job, outputDir);
 	    
-	    HTable hTable = new HTable(getConf(),tableName.getBytes());
-	    HFileOutputFormat2.configureIncrementalLoad(job, hTable);
-	    
+	    if(null != oName){ // write to output file
+		    Path outputDir = new Path(oName);
+		    job.setOutputFormatClass(HFileOutputFormat2.class);
+		    job.setMapOutputKeyClass(ImmutableBytesWritable.class);
+		    job.setMapOutputValueClass(Put.class);
+		    HFileOutputFormat2.setOutputPath(job, outputDir);
+	    } else { // write to table directly
+			TableMapReduceUtil.initTableReducerJob(tableName, null, job);
+			job.setNumReduceTasks(0);
+	    }
 		return job.waitForCompletion(true)?0:1;
 	}
 
@@ -91,7 +95,7 @@ public class FirstDriver extends Configured implements Tool {
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
-		if(args.length != 4){ // quick fix
+		if(args.length < 3){ // quick fix
 			System.err.println("Please provide the following parameters: <server> <table-name> <infile> <output>");
 			System.exit(1);	
 		}
